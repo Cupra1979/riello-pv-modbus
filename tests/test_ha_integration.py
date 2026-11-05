@@ -3,6 +3,7 @@
 No network operations or connection to any physical Riello inverter.
 """
 from unittest.mock import AsyncMock, patch
+from importlib import import_module
 
 import pytest
 from homeassistant import config_entries
@@ -21,6 +22,7 @@ CONFIG = {CONF_HOST: "192.0.2.10", CONF_PORT: 502, "unit_id": 1, "model": "PV RS
 
 @pytest.mark.asyncio
 async def test_config_flow_creates_entry(hass, enable_custom_integrations):
+    import_module("custom_components.riello_pv_modbus.config_flow")
     with patch("custom_components.riello_pv_modbus.config_flow.async_read_inverter",
                new_callable=AsyncMock, return_value=DATA):
         result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": "user"})
@@ -35,6 +37,7 @@ async def test_config_flow_creates_entry(hass, enable_custom_integrations):
 async def test_setup_creates_eleven_sensors_and_offline_recovery(hass, enable_custom_integrations):
     entry = MockConfigEntry(domain=DOMAIN, data=CONFIG, unique_id="192.0.2.10:502:1")
     entry.add_to_hass(hass)
+    import_module("custom_components.riello_pv_modbus.coordinator")
     with patch("custom_components.riello_pv_modbus.coordinator.async_read_inverter",
                new_callable=AsyncMock, return_value=DATA) as read:
         assert await hass.config_entries.async_setup(entry.entry_id)
