@@ -2,7 +2,7 @@
 
 Read-only local Modbus TCP integration for **Riello PV RS 3.0** solar inverter.
 
-> Community project, not affiliated with Riello. The register map has been field-verified on **one PV RS 3.0 installation** using Home Assistant Modbus YAML since August 2026. This Python integration is a new implementation and **has not yet been field-tested**. Treat v1.0.0 as a release candidate until validated against a physical inverter.
+> Community project, not affiliated with Riello. The register map has been field-verified on **one PV RS 3.0 installation** using Home Assistant Modbus YAML since August 2026. This Python integration is a new implementation and **has not yet been field-tested**. The first public version is **v1.0.0-rc1 (pre-release)**. Automated checks, including simulated Home Assistant configuration and sensor tests, pass, but this Python integration has **not** been tested on a physical inverter.
 
 ## Sensors
 
@@ -10,7 +10,7 @@ Eight direct registers: AC voltage, AC current, AC power, grid frequency, PV vol
 
 ## Installation
 
-### Via HACS / Marketplace (when repository is published)
+### Via HACS (custom repository)
 
 1. Add this repository as a **custom integration repository**.
 2. Download **Riello PV Modbus**.
@@ -32,15 +32,28 @@ Options permit an update interval between **10–300 seconds**, default 30 secon
 
 Homey may import the resulting HA sensors through its Home Assistant app, depending on Homey app/device support. No special Homey dependency is required.
 
-## Non-invasive validation (recommended for an existing stable installation)
+## Testing and existing Home Assistant installations
 
-**Do not install this candidate onto the currently working Home Assistant instance.** The included tests can be run on another computer and never open a real Modbus connection. Run `python -m unittest discover -s tests -p "test_modbus_offline.py" -v` from the repository root. GitHub Actions runs these tests on each commit. These tests cover register decoding, derived calculations, offline errors and recovery on the next polling cycle, but do **not** prove compatibility with a real PV RS 3.0 or the full Home Assistant runtime.
+**A second Home Assistant instance is not required to install this pre-release.** The repository is checked with automated Modbus simulations, Home Assistant integration tests, hassfest and HACS validation. These checks do not replace field testing on a real inverter; this release is intended for voluntary early adopters.
 
-A separate disposable Home Assistant test instance is preferable for any integration installation testing. If available, use a Modbus simulator to test the full integration without contacting the live inverter. A public stable release should only follow that test and a field test volunteered by a separate user; the original installation need never be modified.
+On a Home Assistant system that already reads the same inverter through Modbus YAML, **do not configure both implementations to poll the inverter at the same time**. Preserve a full backup before switching. Existing dashboards, Energy statistics and Homey connections may depend on your current entity IDs and will not automatically transfer to the new integration.
 
-## Switching from YAML / Device Tools
+If you want to keep a working setup untouched, **do not install or configure the new integration on it**. You can continue using the YAML sensors indefinitely. Anyone choosing to switch can follow the instructions below.
 
-**Avoid double polling and duplicate sensor IDs.** Back up your Home Assistant configuration and record entity IDs and dashboards. Disable/remove the old `modbus:` Riello sensor definitions and associated templates after confirming the new entities have valid values. Remove the old virtual Device Tools association only when safe. The new sensor entity IDs may differ from the old ones; update dashboard references, energy source and Homey mappings as needed. **Historical statistics are not automatically migrated.**
+## Migrating from Modbus YAML / Device Tools
+
+1. Make a Home Assistant backup and record the existing entity IDs, Energy dashboard source, Device Tools association and Homey automations.
+2. Install the custom integration via HACS, but do not configure it yet.
+3. Disable the existing Riello Modbus polling and its dependent template sensors; then restart Home Assistant. Make sure unrelated Modbus devices remain configured.
+4. Add **Riello PV Modbus** from Settings → Devices & services with your own inverter host, port and slave ID. Confirm all sensors display plausible values.
+5. Update dashboard cards, Energy source and Homey references to the new entity IDs, as required. Historical statistics are **not automatically migrated**.
+6. Only remove obsolete virtual-device associations after verifying the replacement and keeping a rollback path.
+
+**Note:** The configuration flow checks live communication with the inverter. If the Wi-Fi/Modbus interface is offline at night, initial onboarding may fail; retry while the inverter is reachable. After setup, interruptions mark sensors unavailable and polling resumes when communication returns.
+
+## Automated validation
+
+GitHub Actions runs the read-only adapter tests, a simulated Home Assistant config-flow and 11-sensor lifecycle test, hassfest and HACS checks. No tests contact a private inverter or home network. To run the protocol-only tests locally, execute `python -m unittest discover -s tests -p "test_modbus_offline.py" -v` from the repository root.
 
 ## Register map
 
@@ -65,14 +78,12 @@ Values are read using function code 03 (holding registers). This integration **n
 - No daily energy register, device error codes, alarm registers or write controls.
 - `total_energy` should be independently verified against the inverter before inclusion in long-term Energy Dashboard statistics.
 
-## Publishing checklist
+## Release status
 
-- GitHub repository references set to `Cupra1979/riello-pv-modbus`.
-- Add branded artwork permitted for redistribution, GitHub release and issue templates.
-- Local offline protocol adapter tests: **5 passing** (simulated responses only); Python syntax and JSON checks completed.
-- Run Home Assistant integration lifecycle tests in a disposable HA instance, `hassfest`, and HACS checks before publication.
-- Verify a clean first install, offline recovery, nighttime behavior, Energy dashboard and 24-hour logging with real PV RS 3.0 hardware.
-- Run `hassfest`/HACS checks before applying for public catalog listing.
+- Automated protocol, simulated Home Assistant, hassfest and HACS checks have passed.
+- The real-world Modbus register map is verified for **PV RS 3.0** through the original YAML setup; this Python implementation still needs independent live-hardware validation.
+- Report issues and results via [GitHub Issues](https://github.com/Cupra1979/riello-pv-modbus/issues).
+- This project is a community integration; it is not affiliated with or endorsed by Riello.
 
 ## Origins
 
