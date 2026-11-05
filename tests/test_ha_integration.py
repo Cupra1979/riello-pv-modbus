@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, patch
 from importlib import import_module
 
 import pytest
-from homeassistant import config_entries
+from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.const import CONF_HOST, CONF_PORT
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -26,9 +26,9 @@ async def test_config_flow_creates_entry(hass, enable_custom_integrations):
     with patch("custom_components.riello_pv_modbus.config_flow.async_read_inverter",
                new_callable=AsyncMock, return_value=DATA):
         result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": "user"})
-        assert result["type"] == config_entries.FlowResultType.FORM
+        assert result["type"] == FlowResultType.FORM
         result = await hass.config_entries.flow.async_configure(result["flow_id"], user_input=CONFIG)
-    assert result["type"] == config_entries.FlowResultType.CREATE_ENTRY
+    assert result["type"] == FlowResultType.CREATE_ENTRY
     assert result["data"][CONF_HOST] == "192.0.2.10"
     assert result["data"]["unit_id"] == 1
 
@@ -46,7 +46,7 @@ async def test_setup_creates_eleven_sensors_and_offline_recovery(hass, enable_cu
         entities = er.async_entries_for_config_entry(er.async_get(hass), entry.entry_id)
         assert len(entities) == 11
         assert all(entity.entity_id.startswith("sensor.") for entity in entities)
-        assert any(entity.entity_id.endswith("total_energy") for entity in entities)
+        assert any(entity.entity_id.endswith("total_generated_energy") for entity in entities)
         coordinator = entry.runtime_data
         assert coordinator.last_update_success
         assert len(coordinator.data) == 11
