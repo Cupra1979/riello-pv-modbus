@@ -1,0 +1,17 @@
+name: Home Assistant simulated integration tests
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  simulated-ha:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install Home Assistant testing dependencies
+        run: python -m pip install pytest pytest-asyncio pytest-homeassistant-custom-component
+      - name: Test configuration, sensor creation and recovery
+        run: python -m pytest tests/test_ha_integration.py -v
