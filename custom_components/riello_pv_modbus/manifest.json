@@ -1,13 +1,16 @@
 {
   "domain": "riello_pv_modbus",
   "name": "Riello PV Modbus",
-  "version": "1.0.0",
+  "categories": [
+    "energy"
+  ],
+  "codeowners": [],
   "config_flow": true,
   "documentation": "https://github.com/Cupra1979/riello-pv-modbus",
-  "issue_tracker": "https://github.com/Cupra1979/riello-pv-modbus/issues",
-  "codeowners": [],
   "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/Cupra1979/riello-pv-modbus/issues",
   "requirements": [
     "pymodbus>=3.11.0,<4.0.0"
-  ]
+  ],
+  "version": "1.0.0"
 }
