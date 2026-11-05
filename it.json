@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Collega inverter Riello PV",
+        "description": "Inserisci i parametri Modbus TCP del modulo Wi-Fi. I registri sono verificati sul modello PV RS 3.0.",
+        "data": {
+          "host": "Indirizzo IP o nome host",
+          "port": "Porta TCP",
+          "unit_id": "ID slave Modbus",
+          "model": "Modello inverter"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossibile leggere l’inverter: controlla rete, porta TCP e ID slave."
+    },
+    "abort": {
+      "already_configured": "Questo inverter è già configurato."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Intervallo letture",
+        "data": {
+          "scan_interval": "Intervallo aggiornamento (secondi)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "ac_voltage": {
+        "name": "Tensione AC"
+      },
+      "ac_current": {
+        "name": "Corrente AC"
+      },
+      "ac_power": {
+        "name": "Potenza AC"
+      },
+      "frequency": {
+        "name": "Frequenza di rete"
+      },
+      "pv_voltage": {
+        "name": "Tensione FV"
+      },
+      "pv_current": {
+        "name": "Corrente FV"
+      },
+      "temperature": {
+        "name": "Temperatura inverter"
+      },
+      "total_energy": {
+        "name": "Energia totale prodotta"
+      },
+      "dc_power": {
+        "name": "Potenza DC"
+      },
+      "efficiency": {
+        "name": "Rendimento inverter"
+      },
+      "losses": {
+        "name": "Perdite inverter"
+      }
+    }
+  }
+}

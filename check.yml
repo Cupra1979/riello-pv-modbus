@@ -1,0 +1,26 @@
+name: Offline quality checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Run isolated offline tests
+        run: python -m unittest discover -s tests -p 'test_modbus_offline.py' -v
+      - name: Validate Python syntax and JSON
+        run: |
+          python -m compileall -q custom_components/riello_pv_modbus
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for f in Path('custom_components').rglob('*.json'):
+              json.loads(f.read_text(encoding='utf-8'))
+          json.loads(Path('hacs.json').read_text(encoding='utf-8'))
+          print('JSON valid')
+          PY

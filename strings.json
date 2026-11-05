@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect Riello PV inverter",
+        "description": "Enter the inverter Wi-Fi Modbus TCP parameters. Only the PV RS 3.0 register layout has been verified.",
+        "data": {
+          "host": "Inverter IP address or hostname",
+          "port": "TCP port",
+          "unit_id": "Modbus slave ID",
+          "model": "Inverter model"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not read the inverter; check network, TCP port and slave ID."
+    },
+    "abort": {
+      "already_configured": "This inverter is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Polling settings",
+        "data": {
+          "scan_interval": "Update interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "ac_voltage": {
+        "name": "AC voltage"
+      },
+      "ac_current": {
+        "name": "AC current"
+      },
+      "ac_power": {
+        "name": "AC power"
+      },
+      "frequency": {
+        "name": "Grid frequency"
+      },
+      "pv_voltage": {
+        "name": "PV voltage"
+      },
+      "pv_current": {
+        "name": "PV current"
+      },
+      "temperature": {
+        "name": "Inverter temperature"
+      },
+      "total_energy": {
+        "name": "Total generated energy"
+      },
+      "dc_power": {
+        "name": "DC power"
+      },
+      "efficiency": {
+        "name": "Inverter efficiency"
+      },
+      "losses": {
+        "name": "Inverter losses"
+      }
+    }
+  }
+}
