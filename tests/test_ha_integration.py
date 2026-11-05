@@ -39,17 +39,16 @@ async def test_setup_creates_eleven_sensors_and_offline_recovery(hass, enable_cu
                new_callable=AsyncMock, return_value=DATA) as read:
         assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
-        registry = hass.data["entity_registry"] if False else None
         from homeassistant.helpers import entity_registry as er
         entities = er.async_entries_for_config_entry(er.async_get(hass), entry.entry_id)
         assert len(entities) == 11
-        names = {entity.unique_id.split("_")[-1] for entity in entities}
         assert all(entity.entity_id.startswith("sensor.") for entity in entities)
         assert any(entity.entity_id.endswith("total_energy") for entity in entities)
         coordinator = entry.runtime_data
         assert coordinator.last_update_success
         assert len(coordinator.data) == 11
-        read.side_effect = OSError("simulated disconnection")
+        from custom_components.riello_pv_modbus.modbus_client import RielloCommunicationError
+        read.side_effect = RielloCommunicationError("simulated disconnection")
         await coordinator.async_refresh()
         assert not coordinator.last_update_success
         read.side_effect = None
